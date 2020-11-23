@@ -30,7 +30,6 @@ final class Helpers
 
 	/**
 	 * @param mixed[]|null $header
-	 * @return string
 	 */
 	public static function formatHeader(?array $header): string
 	{

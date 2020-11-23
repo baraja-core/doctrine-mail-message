@@ -17,74 +17,53 @@ class DoctrineMessage
 {
 	use UuidIdentifier;
 
-	/**
-	 * @var string
-	 * @ORM\Column(type="string", name="`from`")
-	 */
-	private $from;
+	/** @ORM\Column(type="string", name="`from`") */
+	private string $from;
 
-	/**
-	 * @var string
-	 * @ORM\Column(type="string", name="`to`")
-	 */
-	private $to;
+	/** @ORM\Column(type="string", name="`to`") */
+	private string $to;
 
-	/**
-	 * @var string
-	 * @ORM\Column(type="string")
-	 */
-	private $subject;
+	/** @ORM\Column(type="string") */
+	private string $subject;
 
-	/**
-	 * @var string|null
-	 * @ORM\Column(type="text", nullable=true)
-	 */
-	private $htmlBody;
+	/** @ORM\Column(type="text", nullable=true) */
+	private ?string $htmlBody;
 
-	/**
-	 * @var string|null
-	 * @ORM\Column(type="text", nullable=true)
-	 */
-	private $textBody;
+	/** @ORM\Column(type="text", nullable=true) */
+	private ?string $textBody;
 
 	/**
 	 * @var string[]
-	 * @ORM\Column(type="json_array")
+	 * @ORM\Column(type="json")
 	 */
-	private $cc = [];
+	private array $cc = [];
 
 	/**
 	 * @var string[]
-	 * @ORM\Column(type="json_array")
+	 * @ORM\Column(type="json")
 	 */
-	private $bcc = [];
+	private array $bcc = [];
 
 	/**
 	 * @var string[]
-	 * @ORM\Column(type="json_array")
+	 * @ORM\Column(type="json")
 	 */
-	private $replyTo = [];
+	private array $replyTo = [];
 
-	/**
-	 * @var string|null
-	 * @ORM\Column(type="string", nullable=true)
-	 */
-	private $returnPath;
+	/** @ORM\Column(type="string", nullable=true) */
+	private ?string $returnPath = null;
 
-	/**
-	 * @var int
-	 * @ORM\Column(type="smallint")
-	 */
-	private $priority = Message::NORMAL;
+	/** @ORM\Column(type="smallint") */
+	private int $priority = Message::NORMAL;
 
 	/**
 	 * Format:
 	 * [ {"file": "hello.txt", "content": "hash", "contentType": "text/plain"}, ... ]
 	 *
 	 * @var string[][]|null[][]
-	 * @ORM\Column(type="json_array")
+	 * @ORM\Column(type="json")
 	 */
-	private $attachments = [];
+	private array $attachments = [];
 
 
 	public function __construct(string $from, string $to, string $subject, ?string $htmlBody = null, ?string $textBody = null)
