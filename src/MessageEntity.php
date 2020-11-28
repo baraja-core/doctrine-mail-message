@@ -73,7 +73,6 @@ final class MessageEntity
 
 		$this->entityManager->persist($return);
 		$this->serializeAttachments($return, $message);
-		$this->entityManager->flush($return);
 
 		return $return;
 	}
