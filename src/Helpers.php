@@ -39,8 +39,8 @@ final class Helpers
 		foreach ($header as $mail => $name) {
 			if ($mail !== null) {
 				return $name === null
-					? trim($mail)
-					: trim($name) . ' <' . trim($mail) . '>';
+					? trim((string) $mail)
+					: trim((string) $name) . ' <' . trim((string) $mail) . '>';
 			}
 		}
 

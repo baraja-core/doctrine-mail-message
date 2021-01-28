@@ -149,6 +149,9 @@ class DoctrineMessage
 
 	public function addReplyTo(?string $replyTo): void
 	{
+		if ($replyTo === null) {
+			return;
+		}
 		$this->replyTo[] = $replyTo;
 		$this->replyTo = \array_unique($this->replyTo);
 	}

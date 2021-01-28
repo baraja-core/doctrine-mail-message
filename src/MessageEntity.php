@@ -44,6 +44,9 @@ final class MessageEntity
 				$cc[] = Helpers::formatHeader([$toKey => $toValue]);
 			}
 		}
+		if ($primaryTo === null) {
+			throw new \InvalidArgumentException('Primary To does not exist.');
+		}
 
 		$return = new DoctrineMessage(
 			$from,
@@ -85,10 +88,14 @@ final class MessageEntity
 			->addTo($message->getTo())
 			->setSubject($message->getSubject())
 			->setHtmlBody(Helpers::processHtmlMail($message))
-			->setBody($message->getTextBody())
-			->setReturnPath($message->getReturnPath())
 			->setPriority($message->getPriority());
 
+		if (($textBody = $message->getTextBody()) !== null) {
+			$return->setBody((string) $textBody);
+		}
+		if (($returnPath = $message->getReturnPath()) !== null) {
+			$return->setReturnPath((string) $returnPath);
+		}
 		foreach ($message->getCc() as $cc) {
 			$return->addCc($cc);
 		}
@@ -159,7 +166,7 @@ final class MessageEntity
 			if (is_file($path = $basePath . '/' . $attachment['content']) === false) {
 				throw new \RuntimeException('Attachment file does not exist, because path "' . $path . '" given.');
 			}
-			$message->addAttachment($attachment['file'], file_get_contents($path), $attachment['contentType'] ?? null);
+			$message->addAttachment($attachment['file'], (string) file_get_contents($path), $attachment['contentType'] ?? null);
 		}
 	}
 
