@@ -16,7 +16,7 @@ final class MessageEntity
 
 	private string $attachmentBasePath;
 
-	private int $defaultAttachmentDirectoryMode = 0777;
+	private int $defaultAttachmentDirectoryMode = 0_777;
 
 
 	public function __construct(string $attachmentBasePath, EntityManager $entityManager)
@@ -178,7 +178,8 @@ final class MessageEntity
 			throw new \LogicException('Doctrine entity with Message must be persisted with valid scalar ID.');
 		}
 
-		FileSystem::createDir($path = $this->getAttachmentBasePath() . '/' . $id, $mode ?? $this->defaultAttachmentDirectoryMode);
+		$path = $this->getAttachmentBasePath() . '/' . $id;
+		FileSystem::createDir($path, $mode ?? $this->defaultAttachmentDirectoryMode);
 
 		return $path;
 	}
