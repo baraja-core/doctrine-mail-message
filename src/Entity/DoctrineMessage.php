@@ -66,8 +66,13 @@ class DoctrineMessage
 	private array $attachments = [];
 
 
-	public function __construct(string $from, string $to, string $subject, ?string $htmlBody = null, ?string $textBody = null)
-	{
+	public function __construct(
+		string $from,
+		string $to,
+		string $subject,
+		?string $htmlBody = null,
+		?string $textBody = null
+	) {
 		$this->from = $from;
 		$this->to = $to;
 		$this->subject = $subject;

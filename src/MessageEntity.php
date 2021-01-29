@@ -52,10 +52,11 @@ final class MessageEntity
 			$from,
 			$primaryTo,
 			$message->getSubject() ?? Strings::truncate(
-				trim(str_replace('*', '', strip_tags($message->getBody() ?: ''))), 128
+				trim(str_replace('*', '', strip_tags($message->getBody() ?: ''))),
+				128,
 			),
 			$message->getHtmlBody() ?: null,
-			$message->getBody() ?: null
+			$message->getBody() ?: null,
 		);
 
 		foreach ($message->getHeader('Cc') ?? [] as $ccMail => $ccName) {
@@ -117,7 +118,7 @@ final class MessageEntity
 		if (\is_dir($this->attachmentBasePath) === false) {
 			throw new \RuntimeException(
 				'Attachment base path "' . $this->attachmentBasePath . '" does not exist. '
-				. 'Did you use DIC extension or create the directory manually?'
+				. 'Did you use DIC extension or create the directory manually?',
 			);
 		}
 
