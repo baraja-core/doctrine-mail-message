@@ -1,0 +1,2 @@
+extensions:
+	doctrineMailMessage: Baraja\DoctrineMailMessage\DoctrineMailMessageExtension
