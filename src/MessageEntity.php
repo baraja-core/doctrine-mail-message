@@ -5,21 +5,21 @@ declare(strict_types=1);
 namespace Baraja\DoctrineMailMessage;
 
 
-use Baraja\Doctrine\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Nette\Mail\Message;
 use Nette\Utils\FileSystem;
 use Nette\Utils\Strings;
 
 final class MessageEntity
 {
-	private EntityManager $entityManager;
+	private EntityManagerInterface $entityManager;
 
 	private string $attachmentBasePath;
 
 	private int $defaultAttachmentDirectoryMode = 0_777;
 
 
-	public function __construct(string $attachmentBasePath, EntityManager $entityManager)
+	public function __construct(string $attachmentBasePath, EntityManagerInterface $entityManager)
 	{
 		$this->attachmentBasePath = $attachmentBasePath;
 		$this->entityManager = $entityManager;
