@@ -5,17 +5,23 @@ declare(strict_types=1);
 namespace Baraja\DoctrineMailMessage;
 
 
-use Baraja\Doctrine\UUID\UuidIdentifier;
+use Baraja\Doctrine\Identifier\IdentifierUnsigned;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Index;
 use Nette\Mail\Message;
 
 /**
  * @ORM\Entity()
- * @ORM\Table(name="core__email_message")
+ * @ORM\Table(
+ *    name="core__email_message",
+ *    indexes={
+ *       @Index(name="core__email_message_subject", columns={"id", "subject"})
+ *    }
+ * )
  */
 class DoctrineMessage
 {
-	use UuidIdentifier;
+	use IdentifierUnsigned;
 
 	/** @ORM\Column(type="string", name="`from`") */
 	private string $from;
