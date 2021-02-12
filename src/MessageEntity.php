@@ -76,6 +76,7 @@ final class MessageEntity
 		$return->setPriority((int) $message->getHeader('X-Priority'));
 
 		$this->entityManager->persist($return);
+		$this->entityManager->getUnitOfWork()->commit($return);
 		$this->serializeAttachments($return, $message);
 
 		return $return;
