@@ -12,17 +12,13 @@ use Nette\Utils\Strings;
 
 final class MessageEntity
 {
-	private EntityManagerInterface $entityManager;
-
-	private string $attachmentBasePath;
-
 	private int $defaultAttachmentDirectoryMode = 0_777;
 
 
-	public function __construct(string $attachmentBasePath, EntityManagerInterface $entityManager)
-	{
-		$this->attachmentBasePath = $attachmentBasePath;
-		$this->entityManager = $entityManager;
+	public function __construct(
+		private string $attachmentBasePath,
+		private EntityManagerInterface $entityManager
+	) {
 	}
 
 
