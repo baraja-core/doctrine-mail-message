@@ -25,10 +25,10 @@ final class MessageEntity
 	public function toEntity(Message $message): DoctrineMessage
 	{
 		if (($from = ($from = $message->getFrom()) ? Helpers::formatHeader($from) : null) === null) {
-			throw new \InvalidArgumentException('Possible problem: From is required.');
+			trigger_error('Possible problem: From is required.');
 		}
 		if (!($to = $message->getHeader('To'))) {
-			throw new \InvalidArgumentException('Possible problem: Mail recipient is required.');
+			trigger_error('Possible problem: Mail recipient is required.');
 		}
 
 		$primaryTo = null;
