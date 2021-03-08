@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Baraja\DoctrineMailMessage;
 
 
+use Baraja\Url\Url;
 use Doctrine\ORM\EntityManagerInterface;
 use Nette\Mail\Message;
 use Nette\Utils\FileSystem;
@@ -25,7 +26,11 @@ final class MessageEntity
 	public function toEntity(Message $message): DoctrineMessage
 	{
 		if (($from = ($from = $message->getFrom()) ? Helpers::formatHeader($from) : null) === null) {
+			if (PHP_SAPI === 'cli') {
+				throw new \InvalidArgumentException('Possible problem: From is required.');
+			}
 			trigger_error('Possible problem: From is required.');
+			$from = 'admin@' . Url::get()->getNetteUrl()->getDomain();
 		}
 		if (!($to = $message->getHeader('To'))) {
 			trigger_error('Possible problem: Mail recipient is required.');
