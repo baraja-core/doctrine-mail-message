@@ -10,6 +10,7 @@
 	],
 	"require": {
 		"php": "^8.0",
+		"baraja-core/url": "^1.1",
 		"nette/di": "^3.0",
 		"nette/mail": "^3.0",
 		"nette/utils": "^3.0",
