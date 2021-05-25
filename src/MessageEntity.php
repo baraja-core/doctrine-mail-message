@@ -25,14 +25,19 @@ final class MessageEntity
 
 	public function toEntity(Message $message): DoctrineMessage
 	{
-		if (($from = ($from = $message->getFrom()) ? Helpers::formatHeader($from) : null) === null) {
+		$from = $message->getFrom();
+		if ($from !== null) {
+			$from = Helpers::formatHeader($from);
+		} else {
 			if (PHP_SAPI === 'cli') {
 				throw new \InvalidArgumentException('Possible problem: From is required.');
 			}
 			trigger_error('Possible problem: From is required.');
 			$from = 'admin@' . Url::get()->getNetteUrl()->getDomain();
 		}
-		if (!($to = $message->getHeader('To'))) {
+
+		$to = $message->getHeader('To');
+		if (!$to) {
 			trigger_error('Possible problem: Mail recipient is required.');
 		}
 
@@ -69,8 +74,8 @@ final class MessageEntity
 		foreach ($message->getHeader('Bcc') ?? [] as $bccMail => $bccName) {
 			$return->addBcc(Helpers::formatHeader([$bccMail => $bccName]));
 		}
-		foreach ($message->getHeader('Reply-To') ?? [] as $replyToMail => $replyToMail) {
-			$return->addReplyTo(Helpers::formatHeader([$replyToMail => $replyToMail]));
+		foreach ($message->getHeader('Reply-To') ?? [] as $replyToMail => $replyToName) {
+			$return->addReplyTo(Helpers::formatHeader([$replyToMail => $replyToName]));
 		}
 
 		$return->setReturnPath($message->getHeader('Return-Path'));
@@ -93,11 +98,13 @@ final class MessageEntity
 			->setHtmlBody(Helpers::processHtmlMail($message))
 			->setPriority($message->getPriority());
 
-		if (($textBody = $message->getTextBody()) !== null) {
-			$return->setBody((string) $textBody);
+		$textBody = $message->getTextBody();
+		if ($textBody !== null) {
+			$return->setBody($textBody);
 		}
-		if (($returnPath = $message->getReturnPath()) !== null) {
-			$return->setReturnPath((string) $returnPath);
+		$returnPath = $message->getReturnPath();
+		if ($returnPath !== null) {
+			$return->setReturnPath($returnPath);
 		}
 		foreach ($message->getCc() as $cc) {
 			$return->addCc($cc);
@@ -142,41 +149,56 @@ final class MessageEntity
 
 	private function serializeAttachments(DoctrineMessage $entity, Message $message): void
 	{
-		if (($attachments = $message->getAttachments()) === []) {
+		$attachments = $message->getAttachments();
+		if ($attachments === []) {
 			return;
 		}
 
 		$basePath = $this->getAttachmentsPath($entity);
 		foreach ($attachments as $attachment) {
-			$content = md5($body = $attachment->getBody());
+			$body = $attachment->getBody();
+			$content = md5($body);
 			FileSystem::write($basePath . '/' . $content, $body);
-			$entity->addAttachment(Helpers::getFileNameByContentDisposition((string) $attachment->getHeader('Content-Disposition')), $content, $attachment->getHeader('Content-Type'));
+			$entity->addAttachment(
+				Helpers::getFileNameByContentDisposition((string) $attachment->getHeader('Content-Disposition')),
+				$content,
+				$attachment->getHeader('Content-Type'),
+			);
 		}
 	}
 
 
 	private function unSerializeAttachments(DoctrineMessage $entity, Message $message): void
 	{
-		if (($attachments = $entity->getAttachments()) === []) {
+		$attachments = $entity->getAttachments();
+		if ($attachments === []) {
 			return;
 		}
 
 		$basePath = $this->getAttachmentsPath($entity);
 		foreach ($attachments as $attachment) {
 			if (isset($attachment['file'], $attachment['content']) === false) {
-				throw new \RuntimeException('Attachment record is broken, because "' . \json_encode($attachment) . '" given.');
+				throw new \RuntimeException(
+					'Attachment record is broken, because "' . \json_encode($attachment) . '" given.',
+				);
 			}
-			if (is_file($path = $basePath . '/' . $attachment['content']) === false) {
+			$path = $basePath . '/' . $attachment['content'];
+			if (is_file($path) === false) {
 				throw new \RuntimeException('Attachment file does not exist, because path "' . $path . '" given.');
 			}
-			$message->addAttachment($attachment['file'], (string) file_get_contents($path), $attachment['contentType'] ?? null);
+			$message->addAttachment(
+				$attachment['file'],
+				(string) file_get_contents($path),
+				$attachment['contentType'] ?? null,
+			);
 		}
 	}
 
 
 	private function getAttachmentsPath(DoctrineMessage $entity, ?int $mode = null): string
 	{
-		if (!($id = $entity->getId())) {
+		$id = $entity->getId();
+		if (!$id) {
 			throw new \LogicException('Doctrine entity with Message must be persisted with valid scalar ID.');
 		}
 

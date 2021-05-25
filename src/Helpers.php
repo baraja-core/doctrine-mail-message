@@ -16,11 +16,16 @@ final class Helpers
 
 	public static function getFileNameByContentDisposition(string $haystack): string
 	{
-		if (($haystack = trim((string) preg_replace('/\s+/', '', $haystack))) === '') {
+		$haystack = trim((string) preg_replace('/\s+/', '', $haystack));
+		if ($haystack === '') {
 			throw new \InvalidArgumentException('Attachment file name is empty.');
 		}
-		if (($return = trim((string) preg_replace('/^.*filename="([^"]+?)(\.[^".]+)?"/', '$1$2', $haystack))) === '') {
-			throw new \InvalidArgumentException('Header "Content-Disposition" is invalid, because string "' . $haystack . '" does not match required filename format.');
+		$return = trim((string) preg_replace('/^.*filename="([^"]+?)(\.[^".]+)?"/', '$1$2', $haystack));
+		if ($return === '') {
+			throw new \InvalidArgumentException(
+				'Header "Content-Disposition" is invalid, '
+				. 'because string "' . $haystack . '" does not match required filename format.',
+			);
 		}
 
 		return $return;
@@ -53,7 +58,8 @@ final class Helpers
 			. htmlspecialchars($entity->getId() . '_' . date('Y-m-d'), ENT_QUOTES)
 			. '</div>';
 
-		if (strpos($body = (string) ($entity->getHtmlBody() ?? $entity->getTextBody()), '</body>') !== false) {
+		$body = (string) ($entity->getHtmlBody() ?? $entity->getTextBody());
+		if (str_contains($body, '</body>')) {
 			return str_replace('</body>', $pairHtml . '</body>', $body);
 		}
 

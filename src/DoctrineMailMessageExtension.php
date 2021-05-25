@@ -27,20 +27,28 @@ final class DoctrineMailMessageExtension extends CompilerExtension
 	{
 		$builder = $this->getContainerBuilder();
 		if (\class_exists('\Baraja\Doctrine\ORM\DI\OrmAnnotationsExtension')) {
-			OrmAnnotationsExtension::addAnnotationPathToManager($builder, 'Baraja\DoctrineMailMessage', __DIR__ . '/Entity');
+			OrmAnnotationsExtension::addAnnotationPathToManager(
+				$builder,
+				'Baraja\DoctrineMailMessage',
+				__DIR__ . '/Entity',
+			);
 		}
 
 		if (isset($builder->parameters['tempDir']) === false) {
-			throw new \RuntimeException('System parameter "tempDir" is required. Please check your project configuration.');
+			throw new \RuntimeException(
+				'System parameter "tempDir" is required. Please check your project configuration.',
+			);
 		}
 
-		$this->createDir($attachmentBasePath = $builder->parameters['tempDir'] . '/emailer-attachments');
+		$this->createDir($builder->parameters['tempDir'] . '/emailer-attachments');
 
 		$builder->addDefinition($this->prefix('messageEntity'))
 			->setFactory(MessageEntity::class)
-			->setArguments([
-				'attachmentBasePath' => $builder->parameters['tempDir'],
-			]);
+			->setArguments(
+				[
+					'attachmentBasePath' => $builder->parameters['tempDir'],
+				]
+			);
 	}
 
 

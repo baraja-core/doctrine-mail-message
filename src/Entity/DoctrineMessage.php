@@ -66,7 +66,7 @@ class DoctrineMessage
 	 * Format:
 	 * [ {"file": "hello.txt", "content": "hash", "contentType": "text/plain"}, ... ]
 	 *
-	 * @var string[][]|null[][]
+	 * @var array<int, array<string, string|null>>
 	 * @ORM\Column(type="json")
 	 */
 	private array $attachments = [];
@@ -77,7 +77,7 @@ class DoctrineMessage
 		string $to,
 		string $subject,
 		?string $htmlBody = null,
-		?string $textBody = null
+		?string $textBody = null,
 	) {
 		$this->from = $from;
 		$this->to = $to;
@@ -242,7 +242,7 @@ class DoctrineMessage
 
 
 	/**
-	 * @return string[][]|null[][]
+	 * @return array<int, array<string, string|null>>
 	 */
 	public function getAttachments(): array
 	{
