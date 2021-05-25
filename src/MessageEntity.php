@@ -56,7 +56,7 @@ final class MessageEntity
 
 		$return = new DoctrineMessage(
 			from: $from,
-		  	to: $primaryTo,
+			to: $primaryTo,
 			subject: $message->getSubject() ?? Strings::truncate(
 				trim(str_replace('*', '', strip_tags($message->getBody() ?: ''))),
 				128,
