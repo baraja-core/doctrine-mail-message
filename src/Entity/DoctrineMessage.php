@@ -231,6 +231,9 @@ class DoctrineMessage
 
 	public function setTextBody(?string $textBody): void
 	{
+		if ($textBody !== null) {
+			$textBody = implode("\n", array_map(static fn(string $line): string => trim($line), explode("\n", str_replace(["\r\n", "\r"], "\n", $textBody))));
+		}
 		$this->textBody = $textBody;
 	}
 
