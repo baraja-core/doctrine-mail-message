@@ -79,11 +79,11 @@ class DoctrineMessage
 		?string $htmlBody = null,
 		?string $textBody = null,
 	) {
-		$this->from = $from;
-		$this->to = $to;
-		$this->subject = $subject;
-		$this->htmlBody = $htmlBody;
-		$this->textBody = $textBody;
+		$this->setFrom($from);
+		$this->setTo($to);
+		$this->setSubject($subject);
+		$this->setHtmlBody($htmlBody);
+		$this->setTextBody($textBody);
 	}
 
 
