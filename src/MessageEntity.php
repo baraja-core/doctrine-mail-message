@@ -55,14 +55,14 @@ final class MessageEntity
 		}
 
 		$return = new DoctrineMessage(
-			$from,
-			$primaryTo,
-			$message->getSubject() ?? Strings::truncate(
+			from: $from,
+		  	to: $primaryTo,
+			subject: $message->getSubject() ?? Strings::truncate(
 				trim(str_replace('*', '', strip_tags($message->getBody() ?: ''))),
 				128,
 			),
-			$message->getHtmlBody() ?: null,
-			$message->getBody() ?: null,
+			htmlBody: $message->getHtmlBody() ?: null,
+			textBody: $message->getBody() ?: null,
 		);
 
 		foreach ($message->getHeader('Cc') ?? [] as $ccMail => $ccName) {
