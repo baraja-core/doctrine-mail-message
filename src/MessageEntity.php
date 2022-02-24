@@ -83,7 +83,10 @@ final class MessageEntity
 
 		$this->entityManager->persist($return);
 		$this->entityManager->getUnitOfWork()->commit($return);
-		$this->serializeAttachments($return, $message);
+		if ($message->getAttachments() !== []) {
+			$this->serializeAttachments($return, $message);
+			$this->entityManager->getUnitOfWork()->commit($return);
+		}
 
 		return $return;
 	}
