@@ -5,20 +5,12 @@ declare(strict_types=1);
 namespace Baraja\DoctrineMailMessage;
 
 
-use Baraja\Doctrine\Identifier\IdentifierUnsigned;
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\ORM\Mapping\Index;
 use Nette\Mail\Message;
 
-/**
- * @ORM\Entity()
- * @ORM\Table(
- *    name="core__email_message",
- *    indexes={
- *       @Index(name="core__email_message_subject", columns={"id", "subject"})
- *    }
- * )
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'core__email_message')]
+#[ORM\Index(columns: ['id', 'subject'], name: 'core__email_message_subject')]
 class DoctrineMessage
 {
 	#[ORM\Id]
@@ -26,43 +18,37 @@ class DoctrineMessage
 	#[ORM\GeneratedValue]
 	protected int $id;
 
-	/** @ORM\Column(type="string", name="`from`") */
+	#[ORM\Column(name: '`from`', type: 'string')]
 	private string $from;
 
-	/** @ORM\Column(type="string", name="`to`") */
+	#[ORM\Column(name: '`to`', type: 'string')]
 	private string $to;
 
-	/** @ORM\Column(type="string") */
+	#[ORM\Column(type: 'string')]
 	private string $subject;
 
-	/** @ORM\Column(type="text", nullable=true) */
+	#[ORM\Column(type: 'text', nullable: true)]
 	private ?string $htmlBody;
 
-	/** @ORM\Column(type="text", nullable=true) */
+	#[ORM\Column(type: 'text', nullable: true)]
 	private ?string $textBody;
 
-	/**
-	 * @var string[]
-	 * @ORM\Column(type="json")
-	 */
+	/** @var array<int, string> */
+	#[ORM\Column(type: 'json')]
 	private array $cc = [];
 
-	/**
-	 * @var string[]
-	 * @ORM\Column(type="json")
-	 */
+	/** @var array<int, string> */
+	#[ORM\Column(type: 'json')]
 	private array $bcc = [];
 
-	/**
-	 * @var string[]
-	 * @ORM\Column(type="json")
-	 */
+	/** @var array<int, string> */
+	#[ORM\Column(type: 'json')]
 	private array $replyTo = [];
 
-	/** @ORM\Column(type="string", nullable=true) */
+	#[ORM\Column(type: 'string', nullable: true)]
 	private ?string $returnPath = null;
 
-	/** @ORM\Column(type="smallint") */
+	#[ORM\Column(type: 'smallint')]
 	private int $priority = Message::NORMAL;
 
 	/**
@@ -70,8 +56,8 @@ class DoctrineMessage
 	 * [ {"file": "hello.txt", "content": "hash", "contentType": "text/plain"}, ... ]
 	 *
 	 * @var array<int, array<string, string|null>>
-	 * @ORM\Column(type="json")
 	 */
+	#[ORM\Column(type: 'json')]
 	private array $attachments = [];
 
 
@@ -126,9 +112,7 @@ class DoctrineMessage
 	}
 
 
-	/**
-	 * @return string[]
-	 */
+	/** @return array<int, string> */
 	public function getCc(): array
 	{
 		return $this->cc;
@@ -142,9 +126,7 @@ class DoctrineMessage
 	}
 
 
-	/**
-	 * @return string[]
-	 */
+	/** @return array<int, string> */
 	public function getBcc(): array
 	{
 		return $this->bcc;
@@ -158,9 +140,7 @@ class DoctrineMessage
 	}
 
 
-	/**
-	 * @return string[]
-	 */
+	/** @return array<int, string> */
 	public function getReplyTo(): array
 	{
 		return $this->replyTo;
