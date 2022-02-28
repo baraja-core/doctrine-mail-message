@@ -200,12 +200,7 @@ final class MessageEntity
 
 	private function getAttachmentsPath(DoctrineMessage $entity, ?int $mode = null): string
 	{
-		$id = $entity->getId();
-		if (!$id) {
-			throw new \LogicException('Doctrine entity with Message must be persisted with valid scalar ID.');
-		}
-
-		$path = $this->getAttachmentBasePath() . '/' . $id;
+		$path = $this->getAttachmentBasePath() . '/' . $entity->getId();
 		FileSystem::createDir($path, $mode ?? $this->defaultAttachmentDirectoryMode);
 
 		return $path;

@@ -21,7 +21,10 @@ use Nette\Mail\Message;
  */
 class DoctrineMessage
 {
-	use IdentifierUnsigned;
+	#[ORM\Id]
+	#[ORM\Column(type: 'integer', unique: true, options: ['unsigned' => true])]
+	#[ORM\GeneratedValue]
+	protected int $id;
 
 	/** @ORM\Column(type="string", name="`from`") */
 	private string $from;
@@ -84,6 +87,12 @@ class DoctrineMessage
 		$this->setSubject($subject);
 		$this->setHtmlBody($htmlBody);
 		$this->setTextBody($textBody);
+	}
+
+
+	public function getId(): int
+	{
+		return $this->id;
 	}
 
 
