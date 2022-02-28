@@ -51,12 +51,7 @@ class DoctrineMessage
 	#[ORM\Column(type: 'smallint')]
 	private int $priority = Message::NORMAL;
 
-	/**
-	 * Format:
-	 * [ {"file": "hello.txt", "content": "hash", "contentType": "text/plain"}, ... ]
-	 *
-	 * @var array<int, array<string, string|null>>
-	 */
+	/** @var array<int, array{file: string, content: string, contentType: string|null}> */
 	#[ORM\Column(type: 'json')]
 	private array $attachments = [];
 
@@ -233,9 +228,7 @@ class DoctrineMessage
 	}
 
 
-	/**
-	 * @return array<int, array<string, string|null>>
-	 */
+	/** @return array<int, array{file: string, content: string, contentType: string|null}> */
 	public function getAttachments(): array
 	{
 		return $this->attachments;
@@ -244,8 +237,8 @@ class DoctrineMessage
 
 	public function addAttachment(string $file, string $contentHash, ?string $contentType = null): void
 	{
-		if (!preg_match('/^[\da-f]{32}$/', $contentHash)) {
-			throw new \InvalidArgumentException('Content hash "' . $contentHash . '" is not valid MD5 hash.');
+		if (preg_match('/^[\da-f]{32}$/', $contentHash) !== 1) {
+			throw new \InvalidArgumentException(sprintf('Content hash "%s" is not valid MD5 hash.', $contentHash));
 		}
 
 		$this->attachments[] = [
