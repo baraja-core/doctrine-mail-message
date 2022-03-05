@@ -203,6 +203,10 @@ class DoctrineMessage
 
 	public function setHtmlBody(?string $htmlBody): void
 	{
+		$htmlBody = trim($htmlBody ?? '');
+		if ($htmlBody === '') {
+			$htmlBody = null;
+		}
 		$this->htmlBody = $htmlBody;
 	}
 
@@ -217,6 +221,10 @@ class DoctrineMessage
 	{
 		if ($textBody !== null) {
 			$textBody = implode("\n", array_map(static fn(string $line): string => trim($line), explode("\n", str_replace(["\r\n", "\r"], "\n", $textBody))));
+			$textBody = trim($textBody);
+			if ($textBody === '') {
+				$textBody = null;
+			}
 		}
 		$this->textBody = $textBody;
 	}
@@ -231,6 +239,13 @@ class DoctrineMessage
 	/** @return array<int, array{file: string, content: string, contentType: string|null}> */
 	public function getAttachments(): array
 	{
+		foreach ($this->attachments as $attachment) {
+			/** @phpstan-ignore-next-line */
+			if (isset($attachment['file'], $attachment['content']) === false) {
+				throw new \RuntimeException('Attachment record is broken, because "' . \json_encode($attachment, JSON_THROW_ON_ERROR) . '" given.');
+			}
+		}
+
 		return $this->attachments;
 	}
 

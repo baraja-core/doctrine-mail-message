@@ -36,8 +36,9 @@ final class MessageEntity
 			$from = 'admin@' . Url::get()->getNetteUrl()->getDomain();
 		}
 
+		/** @var array<string, string|null>|null $to */
 		$to = $message->getHeader('To');
-		if (!$to) {
+		if ($to === null || $to === []) {
 			trigger_error('Possible problem: Mail recipient is required.');
 		}
 
@@ -58,28 +59,41 @@ final class MessageEntity
 			from: $from,
 			to: $primaryTo,
 			subject: $message->getSubject() ?? Strings::truncate(
-				trim(str_replace('*', '', strip_tags($message->getBody() ?: ''))),
+				trim(str_replace('*', '', strip_tags($message->getBody()))),
 				128,
 			),
-			htmlBody: $message->getHtmlBody() ?: null,
-			textBody: $message->getBody() ?: null,
+			htmlBody: $message->getHtmlBody() ?? '',
+			textBody: $message->getBody() ?? '',
 		);
 
-		foreach ($message->getHeader('Cc') ?? [] as $ccMail => $ccName) {
+		/** @var array<string, string|null> $ccHeader */
+		$ccHeader = $message->getHeader('Cc') ?? [];
+		foreach ($ccHeader as $ccMail => $ccName) {
 			$return->addCc(Helpers::formatHeader([$ccMail => $ccName]));
 		}
+
 		foreach ($cc as $ccItem) {
 			$return->addCc($ccItem);
 		}
-		foreach ($message->getHeader('Bcc') ?? [] as $bccMail => $bccName) {
+
+		/** @var array<string, string|null> $bccHeader */
+		$bccHeader = $message->getHeader('Bcc') ?? [];
+		foreach ($bccHeader as $bccMail => $bccName) {
 			$return->addBcc(Helpers::formatHeader([$bccMail => $bccName]));
 		}
-		foreach ($message->getHeader('Reply-To') ?? [] as $replyToMail => $replyToName) {
+
+		/** @var array<string, string|null> $replyToHeader */
+		$replyToHeader = $message->getHeader('Reply-To') ?? [];
+		foreach ($replyToHeader as $replyToMail => $replyToName) {
 			$return->addReplyTo(Helpers::formatHeader([$replyToMail => $replyToName]));
 		}
 
-		$return->setReturnPath($message->getHeader('Return-Path'));
-		$return->setPriority((int) $message->getHeader('X-Priority'));
+		$returnPath = $message->getHeader('Return-Path');
+		$priority = $message->getHeader('X-Priority') ?? 3;
+		assert($returnPath === null || is_string($returnPath));
+		assert(is_scalar($priority));
+		$return->setReturnPath($returnPath);
+		$return->setPriority((int) $priority);
 
 		$this->entityManager->persist($return);
 		$this->entityManager->getUnitOfWork()->commit($return);
@@ -129,7 +143,7 @@ final class MessageEntity
 	{
 		if (\is_dir($this->attachmentBasePath) === false) {
 			throw new \RuntimeException(
-				'Attachment base path "' . $this->attachmentBasePath . '" does not exist. '
+				sprintf('Attachment base path "%s" does not exist. ', $this->attachmentBasePath)
 				. 'Did you use DIC extension or create the directory manually?',
 			);
 		}
@@ -161,11 +175,15 @@ final class MessageEntity
 		foreach ($attachments as $attachment) {
 			$body = $attachment->getBody();
 			$content = md5($body);
-			FileSystem::write($basePath . '/' . $content, $body);
+			FileSystem::write(sprintf('%s/%s', $basePath, $content), $body);
+			$contentDisposition = $attachment->getHeader('Content-Disposition');
+			$contentType = $attachment->getHeader('Content-Type');
+			assert($contentDisposition === null || is_string($contentDisposition));
+			assert($contentType === null || is_string($contentType));
 			$entity->addAttachment(
-				Helpers::getFileNameByContentDisposition((string) $attachment->getHeader('Content-Disposition')),
-				$content,
-				$attachment->getHeader('Content-Type'),
+				file: Helpers::getFileNameByContentDisposition($contentDisposition),
+				contentHash: $content,
+				contentType: $contentType,
 			);
 		}
 	}
@@ -180,14 +198,9 @@ final class MessageEntity
 
 		$basePath = $this->getAttachmentsPath($entity);
 		foreach ($attachments as $attachment) {
-			if (isset($attachment['file'], $attachment['content']) === false) {
-				throw new \RuntimeException(
-					'Attachment record is broken, because "' . \json_encode($attachment) . '" given.',
-				);
-			}
-			$path = $basePath . '/' . $attachment['content'];
+			$path = sprintf('%s/%s', $basePath, $attachment['content']);
 			if (is_file($path) === false) {
-				throw new \RuntimeException('Attachment file does not exist, because path "' . $path . '" given.');
+				throw new \RuntimeException(sprintf('Attachment file does not exist, because path "%s" given.', $path));
 			}
 			$message->addAttachment(
 				$attachment['file'],

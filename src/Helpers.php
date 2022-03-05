@@ -22,10 +22,7 @@ final class Helpers
 		}
 		$return = trim((string) preg_replace('/^.*filename="([^"]+?)(\.[^".]+)?"/', '$1$2', $haystack));
 		if ($return === '') {
-			throw new \InvalidArgumentException(
-				'Header "Content-Disposition" is invalid, '
-				. 'because string "' . $haystack . '" does not match required filename format.',
-			);
+			throw new \InvalidArgumentException(sprintf('Header "Content-Disposition" is invalid, because string "%s" does not match required filename format.', $haystack));
 		}
 
 		return $return;
@@ -33,19 +30,29 @@ final class Helpers
 
 
 	/**
-	 * @param mixed[]|null $header
+	 * Formats:
+	 *          (int => mail)       (mail => name|null)
+	 *         ________________   ________________________
+	 *        |                \ |                        \
+	 * @param array<int, string>|array<string, string|null>|null $header
 	 */
 	public static function formatHeader(?array $header): string
 	{
 		if ($header === null) {
 			return '';
 		}
-		foreach ($header as $mail => $name) {
-			if ($mail !== null) {
-				return $name === null
-					? trim((string) $mail)
-					: trim((string) $name) . ' <' . trim((string) $mail) . '>';
+		foreach ($header as $key => $value) {
+			if ($value === null) {
+				continue;
 			}
+			if (is_int($key)) {
+				return trim($value);
+			}
+			[$value, $key] = [trim($value), trim($key)];
+
+			return $key !== ''
+				? sprintf('%s <%s>', $value, $key)
+				: $value;
 		}
 
 		return '';
