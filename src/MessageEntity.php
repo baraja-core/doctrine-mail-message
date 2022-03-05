@@ -45,7 +45,6 @@ final class MessageEntity
 		$primaryTo = null;
 		$cc = [];
 		foreach ($to ?? [] as $toKey => $toValue) {
-			assert($toValue === null || is_string($toValue));
 			if ($primaryTo === null) {
 				$primaryTo = Helpers::formatHeader([$toKey => $toValue]);
 			} else {
