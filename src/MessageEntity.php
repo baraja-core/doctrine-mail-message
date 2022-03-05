@@ -44,7 +44,8 @@ final class MessageEntity
 
 		$primaryTo = null;
 		$cc = [];
-		foreach ($to as $toKey => $toValue) {
+		foreach ($to ?? [] as $toKey => $toValue) {
+			assert($toValue === null || is_string($toValue));
 			if ($primaryTo === null) {
 				$primaryTo = Helpers::formatHeader([$toKey => $toValue]);
 			} else {
@@ -62,8 +63,8 @@ final class MessageEntity
 				trim(str_replace('*', '', strip_tags($message->getBody()))),
 				128,
 			),
-			htmlBody: $message->getHtmlBody() ?? '',
-			textBody: $message->getBody() ?? '',
+			htmlBody: $message->getHtmlBody(),
+			textBody: $message->getBody(),
 		);
 
 		/** @var array<string, string|null> $ccHeader */
@@ -181,7 +182,7 @@ final class MessageEntity
 			assert($contentDisposition === null || is_string($contentDisposition));
 			assert($contentType === null || is_string($contentType));
 			$entity->addAttachment(
-				file: Helpers::getFileNameByContentDisposition($contentDisposition),
+				file: Helpers::getFileNameByContentDisposition((string) $contentDisposition),
 				contentHash: $content,
 				contentType: $contentType,
 			);

@@ -33,7 +33,7 @@ final class Helpers
 	 * Formats:
 	 *          (int => mail)       (mail => name|null)
 	 *         ________________   ________________________
-	 *        |                \ |                        \
+	 *        /                \ /                        \
 	 * @param array<int, string>|array<string, string|null>|null $header
 	 */
 	public static function formatHeader(?array $header): string
