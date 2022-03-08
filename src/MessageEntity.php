@@ -20,7 +20,7 @@ final class MessageEntity
 	public function __construct(
 		private string $attachmentBasePath,
 		private EntityManagerInterface $entityManager,
-		private ?LoggerInterface $logger,
+		private ?LoggerInterface $logger = null,
 	) {
 	}
 
