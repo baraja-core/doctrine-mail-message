@@ -10,6 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Nette\Mail\Message;
 use Nette\Utils\FileSystem;
 use Nette\Utils\Strings;
+use Psr\Log\LoggerInterface;
 
 final class MessageEntity
 {
@@ -18,7 +19,8 @@ final class MessageEntity
 
 	public function __construct(
 		private string $attachmentBasePath,
-		private EntityManagerInterface $entityManager
+		private EntityManagerInterface $entityManager,
+		private ?LoggerInterface $logger,
 	) {
 	}
 
@@ -200,7 +202,12 @@ final class MessageEntity
 		foreach ($attachments as $attachment) {
 			$path = sprintf('%s/%s', $basePath, $attachment['content']);
 			if (is_file($path) === false) {
-				throw new \RuntimeException(sprintf('Attachment file does not exist, because path "%s" given.', $path));
+				$exception = new \RuntimeException(sprintf('Message %d: Attachment file does not exist, because path "%s" given.', $entity->getId(), $path));
+				if ($this->logger !== null) {
+					$this->logger->critical($exception->getMessage(), ['exception' => $exception]);
+				} else {
+					throw $exception;
+				}
 			}
 			$message->addAttachment(
 				$attachment['file'],
