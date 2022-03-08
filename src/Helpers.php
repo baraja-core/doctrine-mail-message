@@ -42,6 +42,9 @@ final class Helpers
 			return '';
 		}
 		foreach ($header as $key => $value) {
+			if ($value === null && is_string($key)) {
+				return trim($key);
+			}
 			if ($value === null) {
 				continue;
 			}
